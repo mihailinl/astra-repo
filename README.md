@@ -2,17 +2,44 @@
 
 A game integration for Astra on the [Astra Unity foundation](https://github.com/mihailinl/astra-bepinex): it makes Astra better in R.E.P.O.
 
+## Install with Astra
+
+Paste this repository's address into Astra's **Games** tab:
+
+```
+https://github.com/mihailinl/astra-repo
+```
+
+Astra fetches the latest release's `astra-gi.zip`, installs it into a profile of its own and
+launches R.E.P.O. with it when you press Play. Integrations are not reviewed by Astra and are
+always shown as **Experimental**.
+
 ## Build
 
+No game folder and no publicizer needed: every game type (`PlayerController`, `PlayerAvatar`,
+`PlayerCollisionController`, `CameraUtils` — including the internal fields R.E.P.O. keeps on
+them) is reached by NAME at run time through the Astra SDK's `Astra.Sdk.GameType`, never compiled
+against — this builds from public packages alone (the Astra SDK, `BepInEx.Core`,
+`UnityEngine.Modules`).
+
 ```bash
-dotnet build -c Release -p:GameDir="/path/to/R.E.P.O."
+dotnet build -c Release
 ```
 
-Or put the path in `GameDir.props.user` (git ignores it):
+A tagged push (`v*`) builds and publishes `astra-gi.zip` to a GitHub release through
+`.github/workflows/release.yml`. To build the same zip locally (no CI, for testing the layout):
 
-```xml
-<Project><PropertyGroup><GameDir>/path/to/R.E.P.O.</GameDir></PropertyGroup></Project>
+```bash
+# once: unpack the pinned BepInEx release beside this repo's own Release build
+curl -LO https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.5/BepInEx_win_x64_5.4.23.5.zip
+unzip BepInEx_win_x64_5.4.23.5.zip -d bepinex-dist
+# build the Astra foundation once (astra-bepinex/tools/pack.sh), then:
+tools/make-astra-gi.sh
 ```
+
+To build against a local, unreleased Astra SDK before it is on nuget.org: add a
+`GameDir.props.user` (git-ignored) setting `RestoreAdditionalProjectSources` to the SDK's local
+feed path, or uncomment the `astra-local` source in `nuget.config`.
 
 ## Install (by hand, until the Astra marketplace installs it)
 
